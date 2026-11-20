@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="de" dir="ltr">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="google-adsense-account" content="ca-pub-3266873353292561">
-<title>جورنال 999 — أخبار عالمية ومحلية، بث مباشر وملخصات ذكية</title>
-<meta name="description" content="أخبار عالمية ومحلية لحظة بلحظة، بث تلفزيوني مباشر، نتائج مباشرة لكرة القدم وملخصات بالذكاء الاصطناعي.">
-<link rel="canonical" href="https://journal-999.vercel.app/ar/">
+<title>Journal 999 — Weltnachrichten, lokale Presse, Live-TV & KI-Zusammenfassungen</title>
+<meta name="description" content="Weltweite und lokale Nachrichten in Echtzeit, Live-TV, Fußball-Livescores und KI-Zusammenfassungen auf Deutsch, Englisch, Französisch, Spanisch und Arabisch.">
+<link rel="canonical" href="https://journal-999.vercel.app/de/">
 <link rel="alternate" hreflang="en" href="https://journal-999.vercel.app/en/">
 <link rel="alternate" hreflang="fr" href="https://journal-999.vercel.app/fr/">
 <link rel="alternate" hreflang="es" href="https://journal-999.vercel.app/es/">
@@ -14,10 +14,10 @@
 <link rel="alternate" hreflang="ar" href="https://journal-999.vercel.app/ar/">
 <link rel="alternate" hreflang="x-default" href="https://journal-999.vercel.app/en/">
 <meta property="og:type" content="website">
-<meta property="og:title" content="جورنال 999 — أخبار عالمية ومحلية، بث مباشر وملخصات ذكية">
-<meta property="og:description" content="أخبار عالمية ومحلية لحظة بلحظة، بث تلفزيوني مباشر، نتائج مباشرة لكرة القدم وملخصات بالذكاء الاصطناعي.">
-<meta property="og:url" content="https://journal-999.vercel.app/ar/">
-<meta property="og:locale" content="ar">
+<meta property="og:title" content="Journal 999 — Weltnachrichten, lokale Presse, Live-TV & KI-Zusammenfassungen">
+<meta property="og:description" content="Weltweite und lokale Nachrichten in Echtzeit, Live-TV, Fußball-Livescores und KI-Zusammenfassungen auf Deutsch, Englisch, Französisch, Spanisch und Arabisch.">
+<meta property="og:url" content="https://journal-999.vercel.app/de/">
+<meta property="og:locale" content="de">
 <meta property="og:image" content="https://journal-999.vercel.app/icons/icon-512.png">
 <meta name="twitter:card" content="summary">
 <meta name="theme-color" content="#07090e">
@@ -25,7 +25,7 @@
 <link rel="icon" type="image/svg+xml" href="/icons/logo.svg">
 <link rel="icon" type="image/png" href="/icons/icon-192.png">
 <link rel="apple-touch-icon" href="/icons/icon-192.png">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"Journal 999","url":"https://journal-999.vercel.app/ar/","inLanguage":"ar","description":"أخبار عالمية ومحلية لحظة بلحظة، بث تلفزيوني مباشر، نتائج مباشرة لكرة القدم وملخصات بالذكاء الاصطناعي."}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"Journal 999","url":"https://journal-999.vercel.app/de/","inLanguage":"de","description":"Weltweite und lokale Nachrichten in Echtzeit, Live-TV, Fußball-Livescores und KI-Zusammenfassungen auf Deutsch, Englisch, Französisch, Spanisch und Arabisch."}</script>
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <script src="/config.js"></script>
@@ -37,7 +37,7 @@
 <header class="sticky top-0 z-50 bg-[#0d111a] border-b border-gray-800 shadow-lg">
   <div class="max-w-7xl mx-auto flex items-center justify-between p-4 flex-wrap gap-3">
     <div class="flex items-center gap-3">
-      <a href="/ar/" class="flex items-center gap-2.5" aria-label="Journal 999">
+      <a href="/de/" class="flex items-center gap-2.5" aria-label="Journal 999">
         <img src="/icons/logo.svg" alt="" width="40" height="40" class="w-10 h-10 rounded-xl shadow-lg shadow-yellow-500/20">
         <span class="text-2xl font-extrabold tracking-wide text-white leading-none">JOURNAL <span class="text-yellow-400">999</span></span>
       </a>
@@ -60,7 +60,7 @@
 
     <div class="flex items-center gap-2 flex-wrap">
       <select id="lang-select" aria-label="Language" onchange="localStorage.setItem('j999_lang', this.value); location.href='/'+this.value+'/';" class="bg-gray-800 text-white border border-gray-700 rounded-lg px-2 py-1.5 text-sm">
-        <option value="en">English</option><option value="fr">Français</option><option value="es">Español</option><option value="de">Deutsch</option><option value="ar" selected>العربية</option>
+        <option value="en">English</option><option value="fr">Français</option><option value="es">Español</option><option value="de" selected>Deutsch</option><option value="ar">العربية</option>
       </select>
       <div id="google-signin-btn"></div>
       <span id="user-badge" class="hidden text-xs bg-emerald-900/60 border border-emerald-500/40 text-emerald-300 px-3 py-1.5 rounded-lg font-semibold"></span>

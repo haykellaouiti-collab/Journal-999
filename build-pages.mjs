@@ -1,0 +1,189 @@
+// Génère les pages /fr /en /ar, la redirection racine, sitemap.xml et robots.txt.
+// Lancé automatiquement par Vercel (npm run build) ; les fichiers générés sont aussi fournis dans le zip.
+import { mkdirSync, writeFileSync } from "node:fs";
+
+const SITE = (process.env.SITE_URL || "https://journal-999.vercel.app").replace(/\/$/, "");
+const ADSENSE = "ca-pub-3266873353292561";
+
+const META = {
+  en: { dir: "ltr", title: "Journal 999 — World & local news, live TV & AI summaries", desc: "Real-time world and local news from 19 countries, live TV, live football scores and AI summaries in English, French, Spanish, German and Arabic." },
+  fr: { dir: "ltr", title: "Journal 999 — Kiosque mondial, journaux locaux, TV live & IA", desc: "Actualités mondiales et locales de 19 pays en temps réel, TV en direct, scores foot live et résumés IA en français, anglais, espagnol, allemand et arabe." },
+  ar: { dir: "rtl", title: "جورنال 999 — أخبار عالمية ومحلية، بث مباشر وملخصات ذكية", desc: "أخبار عالمية ومحلية لحظة بلحظة، بث تلفزيوني مباشر، نتائج مباشرة لكرة القدم وملخصات بالذكاء الاصطناعي." },
+  es: { dir: "ltr", title: "Journal 999 — Noticias del mundo y prensa local, TV en directo y resúmenes IA", desc: "Noticias mundiales y locales en tiempo real, TV en directo, fútbol en vivo y resúmenes con IA en español, inglés, francés, alemán y árabe." },
+  de: { dir: "ltr", title: "Journal 999 — Weltnachrichten, lokale Presse, Live-TV & KI-Zusammenfassungen", desc: "Weltweite und lokale Nachrichten in Echtzeit, Live-TV, Fußball-Livescores und KI-Zusammenfassungen auf Deutsch, Englisch, Französisch, Spanisch und Arabisch." }
+};
+const LANG_LABEL = { en: "English", fr: "Français", ar: "العربية", es: "Español", de: "Deutsch" };
+const LANGS = ["en", "fr", "es", "de", "ar"];
+
+const COUNTRIES = [
+  ["US", "🇺🇸 United States"], ["GB", "🇬🇧 United Kingdom"], ["CA", "🇨🇦 Canada"], ["AU", "🇦🇺 Australia"],
+  ["FR", "🇫🇷 France"], ["DE", "🇩🇪 Deutschland"], ["ES", "🇪🇸 España"], ["IT", "🇮🇹 Italia"],
+  ["DZ", "🇩🇿 Algeria / الجزائر"], ["MA", "🇲🇦 Morocco / المغرب"], ["TN", "🇹🇳 Tunisia / تونس"], ["EG", "🇪🇬 Egypt / مصر"],
+  ["SA", "🇸🇦 Saudi Arabia / السعودية"], ["AE", "🇦🇪 UAE / الإمارات"], ["IN", "🇮🇳 India"], ["JP", "🇯🇵 Japan / 日本"],
+  ["BR", "🇧🇷 Brasil"], ["NG", "🇳🇬 Nigeria"], ["ZA", "🇿🇦 South Africa"]
+];
+
+const PAPERS = [
+  ["France 24", "France 24 (Direct & RSS)"], ["Al Jazeera", "Al Jazeera الجزيرة (Direct & RSS)"],
+  ["BBC News", "BBC News (UK)"], ["RFI", "RFI Monde (France)"], ["Le Figaro", "Le Figaro (France)"],
+  ["Le Monde", "Le Monde (France)"], ["Echourouk", "Echourouk (Maghreb)"], ["The New York Times", "The New York Times (USA)"],
+  ["L'Équipe", "L'Équipe (Sport)"], ["Marca", "Marca (Football)"],
+  ["Sky News", "Sky News (UK)"], ["DW", "Deutsche Welle (DE)"], ["Euronews", "Euronews (EU)"], ["RTVE", "RTVE (España)"], ["Tagesschau", "Tagesschau (DE)"]
+];
+
+const TABS = [
+  ["mondial", "Tab1", "text-yellow-400 font-bold"], ["local", "TabLocal", ""], ["journaux", "Tab2", ""],
+  ["tv", "TabTV", "text-sky-400 font-semibold"], ["financial", "Tab3", ""], ["economic", "Tab4", ""],
+  ["sport", "Tab5", ""], ["foot", "Tab6", ""], ["live", "Tab7", "text-red-400 font-bold"], ["bookmarks", "TabBm", "text-yellow-300"]
+];
+
+function page(lang) {
+  const m = META[lang];
+  const alt = LANGS.map((l) => `<link rel="alternate" hreflang="${l}" href="${SITE}/${l}/">`).join("\n");
+  const jsonLd = JSON.stringify({
+    "@context": "https://schema.org", "@type": "WebSite", name: "Journal 999", url: `${SITE}/${lang}/`, inLanguage: lang, description: m.desc
+  });
+  return `<!DOCTYPE html>
+<html lang="${lang}" dir="${m.dir}">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="google-adsense-account" content="${ADSENSE}">
+<title>${m.title}</title>
+<meta name="description" content="${m.desc}">
+<link rel="canonical" href="${SITE}/${lang}/">
+${alt}
+<link rel="alternate" hreflang="x-default" href="${SITE}/en/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="${m.title}">
+<meta property="og:description" content="${m.desc}">
+<meta property="og:url" content="${SITE}/${lang}/">
+<meta property="og:locale" content="${lang}">
+<meta property="og:image" content="${SITE}/icons/icon-512.png">
+<meta name="twitter:card" content="summary">
+<meta name="theme-color" content="#07090e">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="icon" type="image/svg+xml" href="/icons/logo.svg">
+<link rel="icon" type="image/png" href="/icons/icon-192.png">
+<link rel="apple-touch-icon" href="/icons/icon-192.png">
+<script type="application/ld+json">${jsonLd}</script>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<script src="/config.js"></script>
+<script src="/i18n.js"></script>
+<script src="/app.js"></script>
+</head>
+<body class="bg-[#07090e] text-gray-200 font-sans">
+
+<header class="sticky top-0 z-50 bg-[#0d111a] border-b border-gray-800 shadow-lg">
+  <div class="max-w-7xl mx-auto flex items-center justify-between p-4 flex-wrap gap-3">
+    <div class="flex items-center gap-3">
+      <a href="/${lang}/" class="flex items-center gap-2.5" aria-label="Journal 999">
+        <img src="/icons/logo.svg" alt="" width="40" height="40" class="w-10 h-10 rounded-xl shadow-lg shadow-yellow-500/20">
+        <span class="text-2xl font-extrabold tracking-wide text-white leading-none">JOURNAL <span class="text-yellow-400">999</span></span>
+      </a>
+      <button id="mode-btn" onclick="toggleLiteMode()" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-purple-600 text-white"></button>
+      <button id="install-btn" class="hidden px-3 py-1.5 rounded-lg text-xs font-bold bg-sky-600 text-white"></button>
+    </div>
+
+    <nav class="flex gap-1 flex-wrap text-sm font-medium" aria-label="Sections">
+      ${TABS.map(([id, key, cls]) => `<button data-tab="${id}" onclick="setTab('${id}')" class="px-3 py-2 rounded-lg hover:bg-gray-800 ${cls}" data-i18n="${key}"></button>`).join("\n      ")}
+    </nav>
+
+    <div class="flex items-center gap-2 flex-wrap">
+      <select id="lang-select" aria-label="Language" onchange="localStorage.setItem('j999_lang', this.value); location.href='/'+this.value+'/';" class="bg-gray-800 text-white border border-gray-700 rounded-lg px-2 py-1.5 text-sm">
+        ${LANGS.map((l) => `<option value="${l}"${l === lang ? " selected" : ""}>${LANG_LABEL[l]}</option>`).join("")}
+      </select>
+      <div id="google-signin-btn"></div>
+      <span id="user-badge" class="hidden text-xs bg-emerald-900/60 border border-emerald-500/40 text-emerald-300 px-3 py-1.5 rounded-lg font-semibold"></span>
+      <button id="admin-badge" onclick="openAdmin()" class="text-xs bg-gray-800 hover:bg-gray-700 px-3 py-2 rounded-lg text-gray-300" data-i18n="Admin"></button>
+      <button onclick="openPricingModal()" class="bg-yellow-400 hover:bg-yellow-300 text-black px-4 py-1.5 rounded-lg font-bold text-sm transition" data-i18n="Premium"></button>
+    </div>
+  </div>
+</header>
+
+<main class="max-w-7xl mx-auto p-4 pb-24">
+  <div id="newspaper-dropdown-container" class="hidden my-4 bg-[#0d111a] p-4 rounded-xl border border-gray-800 flex flex-wrap items-center gap-4">
+    <span class="text-sm font-bold text-yellow-400" data-i18n="PaperLabel"></span>
+    <select onchange="onNewspaperChange(this.value)" class="bg-gray-800 text-white border border-gray-700 rounded-lg px-4 py-2 text-sm flex-1">
+      <option value="" data-i18n="SelectPaper"></option>
+      ${PAPERS.map(([v, l]) => `<option value="${v}">${l}</option>`).join("\n      ")}
+    </select>
+  </div>
+
+  <div id="country-container" class="hidden my-4 bg-[#0d111a] p-4 rounded-xl border border-gray-800 flex flex-wrap items-center gap-4">
+    <span class="text-sm font-bold text-yellow-400" data-i18n="CountryLabel"></span>
+    <select id="country-select" onchange="onCountryChange(this.value)" class="bg-gray-800 text-white border border-gray-700 rounded-lg px-4 py-2 text-sm flex-1">
+      ${COUNTRIES.map(([v, l]) => `<option value="${v}">${l}</option>`).join("\n      ")}
+    </select>
+  </div>
+
+  <form class="flex gap-3 my-6 bg-[#0d111a] p-4 rounded-xl border border-gray-800" onsubmit="event.preventDefault(); doSearch();">
+    <input id="search-input" type="search" data-i18n-ph="SearchPlaceholder" class="flex-1 bg-black/50 border border-gray-700 rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-yellow-400">
+    <button type="submit" class="bg-yellow-400 text-black px-6 py-2 rounded-lg text-sm font-bold" data-i18n="SearchBtn"></button>
+  </form>
+
+  <div id="articles-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+</main>
+
+<footer class="max-w-7xl mx-auto px-4 pb-24 text-xs text-gray-500 flex flex-wrap gap-x-6 gap-y-2 items-center justify-between">
+  <div>
+    <span id="views-total" class="font-semibold text-gray-400"></span>
+    <div id="top-sources" class="mt-1"></div>
+  </div>
+  <div class="flex gap-4">
+    <a class="hover:text-yellow-400" href="/pricing" data-i18n="Pricing"></a>
+    <a class="hover:text-yellow-400" href="/privacy" data-i18n="Privacy"></a>
+  </div>
+</footer>
+
+<div id="modal" class="fixed inset-0 bg-black/80 hidden z-50 items-center justify-center p-4">
+  <div class="bg-[#0d111a] border border-gray-700 max-w-lg w-full rounded-2xl p-6 relative max-h-[90vh] overflow-y-auto">
+    <button onclick="closeModal()" aria-label="Close" class="absolute top-4 end-4 text-gray-400 hover:text-white text-xl">✕</button>
+    <h2 class="text-xl font-bold text-yellow-400 mb-4">Journal 999</h2>
+    <div id="modal-content" class="text-sm"></div>
+  </div>
+</div>
+
+</body>
+</html>
+`;
+}
+
+for (const lang of LANGS) {
+  mkdirSync(lang, { recursive: true });
+  writeFileSync(`${lang}/index.html`, page(lang));
+}
+
+// Racine : redirection selon la langue mémorisée ou celle du navigateur
+writeFileSync("index.html", `<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Journal 999</title>
+<link rel="canonical" href="${SITE}/en/">
+<noscript><meta http-equiv="refresh" content="0; url=/en/"></noscript>
+<script>
+(function () {
+  var L = ["en", "fr", "es", "de", "ar"], l = "en";
+  try {
+    var s = localStorage.getItem("j999_lang");
+    var n = (navigator.language || "en").slice(0, 2);
+    l = L.indexOf(s) > -1 ? s : (L.indexOf(n) > -1 ? n : "en");
+  } catch (e) {}
+  location.replace("/" + l + "/" + location.search);
+})();
+</script></head><body><a href="/en/">Journal 999</a></body></html>
+`);
+
+const urls = [...LANGS.map((l) => `/${l}/`), "/pricing", "/privacy"];
+writeFileSync("sitemap.xml", `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${urls.map((u) => `  <url><loc>${SITE}${u}</loc></url>`).join("\n")}
+</urlset>
+`);
+writeFileSync("robots.txt", `User-agent: *
+Allow: /
+Disallow: /api/
+
+Sitemap: ${SITE}/sitemap.xml
+`);
+console.log("Pages générées pour", SITE);

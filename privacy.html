@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Privacy Policy — Journal 999</title>
+<link rel="icon" type="image/svg+xml" href="/icons/logo.svg">
+<style>
+body{font-family:system-ui,sans-serif;max-width:800px;margin:40px auto;padding:0 20px;line-height:1.6;color:#333}
+a{color:#b45309}
+.lang{margin:0 0 24px}
+section{display:none}
+section.on{display:block}
+</style>
+</head>
+<body>
+<p><a href="/">← Journal 999</a></p>
+<p class="lang"><a href="#" data-l="en">English</a> · <a href="#" data-l="fr">Français</a></p>
+
+<section id="en">
+<h1>Privacy Policy — Journal 999</h1>
+<p>Last updated: November 2026.</p>
+<h2>1. Data we collect</h2>
+<p>Journal 999 only collects what is needed to sign you in (Google account: name and e-mail address) and to manage the Premium subscription. Your preferences (language, lite mode, saved articles, country) are stored locally in your browser and are not sent to our servers.</p>
+<h2>2. Usage statistics</h2>
+<p>We anonymously count site visits and clicks to each newspaper in order to show "views" and the most-read sources. No IP address is stored in these counters.</p>
+<h2>3. AI summaries</h2>
+<p>When you request a summary, the article title and excerpt are sent to Google Gemini to generate the text. No other personal data is transmitted.</p>
+<h2>4. Advertising (Google AdSense)</h2>
+<p>This site uses Google AdSense to fund the service. Ads are loaded only after you consent (banner at the bottom of the page) and are never shown to Premium subscribers. You can change your choice by clearing the site data in your browser.</p>
+<h2>5. Payments</h2>
+<p>Payments are processed by Dodo Payments. Journal 999 does not receive or store your card details; we only keep your e-mail address to activate Premium status.</p>
+<h2>6. Contact</h2>
+<p>Administrator: haykellaouiti@gmail.com</p>
+</section>
+
+<section id="fr">
+<h1>Politique de confidentialité — Journal 999</h1>
+<p>Dernière mise à jour : novembre 2026.</p>
+<h2>1. Données collectées</h2>
+<p>Journal 999 collecte uniquement les informations nécessaires à l'authentification (compte Google : nom et adresse e-mail) et à la gestion de l'abonnement Premium. Vos préférences (langue, mode allégé, favoris, pays) sont stockées localement dans votre navigateur et ne sont pas envoyées à nos serveurs.</p>
+<h2>2. Statistiques de consultation</h2>
+<p>Nous comptons de façon anonyme les visites du site et le nombre de clics vers chaque journal afin d'afficher les « vues » et les sources les plus lues. Aucune adresse IP n'est conservée dans ces compteurs.</p>
+<h2>3. Résumés IA</h2>
+<p>Lorsque vous demandez un résumé, le titre et l'extrait de l'article sont envoyés à Google Gemini pour générer le texte. Aucune autre donnée personnelle n'est transmise.</p>
+<h2>4. Publicités (Google AdSense)</h2>
+<p>Ce site utilise Google AdSense pour financer le service. Les publicités ne sont chargées qu'après votre consentement (bandeau en bas de page) et ne sont jamais affichées aux abonnés Premium. Vous pouvez modifier votre choix en effaçant les données du site dans votre navigateur.</p>
+<h2>5. Paiement</h2>
+<p>Les paiements sont traités par Dodo Payments. Journal 999 ne reçoit ni ne stocke vos coordonnées bancaires ; nous conservons seulement votre adresse e-mail pour activer le statut Premium.</p>
+<h2>6. Contact</h2>
+<p>Administrateur : haykellaouiti@gmail.com</p>
+</section>
+
+<script>
+(function () {
+  var l = "en";
+  try {
+    var s = localStorage.getItem("j999_lang");
+    l = s === "fr" || (!s && (navigator.language || "").slice(0, 2) === "fr") ? "fr" : "en";
+  } catch (e) {}
+  function show(x) {
+    document.documentElement.lang = x;
+    document.getElementById("en").className = x === "en" ? "on" : "";
+    document.getElementById("fr").className = x === "fr" ? "on" : "";
+  }
+  show(l);
+  document.querySelectorAll("[data-l]").forEach(function (a) {
+    a.addEventListener("click", function (e) { e.preventDefault(); show(a.dataset.l); });
+  });
+})();
+</script>
+</body>
+</html>

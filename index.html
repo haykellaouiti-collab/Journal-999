@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Journal 999</title>
+<link rel="canonical" href="https://journal-999.vercel.app/en/">
+<noscript><meta http-equiv="refresh" content="0; url=/en/"></noscript>
+<script>
+(function () {
+  var L = ["en", "fr", "es", "de", "ar"], l = "en";
+  try {
+    var s = localStorage.getItem("j999_lang");
+    var n = (navigator.language || "en").slice(0, 2);
+    l = L.indexOf(s) > -1 ? s : (L.indexOf(n) > -1 ? n : "en");
+  } catch (e) {}
+  location.replace("/" + l + "/" + location.search);
+})();
+</script></head><body><a href="/en/">Journal 999</a></body></html>

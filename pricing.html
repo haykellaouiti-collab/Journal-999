@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pricing — Journal 999 Premium</title>
+<meta name="description" content="Journal 999 Premium: unlimited AI summaries, live football scores and an ad-free experience for $5 per month.">
+<meta name="theme-color" content="#07090e">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="icon" type="image/svg+xml" href="/icons/logo.svg">
+<style>
+body{background:#07090e;color:#e5e7eb;font-family:'Segoe UI',system-ui,sans-serif;margin:0;min-height:100vh;display:flex;flex-direction:column}
+.header{background:#0d111a;padding:12px 24px;border-bottom:2px solid #facc15;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.header a{color:#facc15;text-decoration:none;font-weight:bold}
+.brand{display:flex;align-items:center;gap:10px;color:#fff!important;font-weight:800;letter-spacing:.03em}
+.brand img{width:34px;height:34px;border-radius:9px}
+.brand b{color:#facc15}
+.wrap{max-width:900px;margin:40px auto;padding:0 20px;flex:1;width:100%;box-sizing:border-box}
+h1{text-align:center}
+.sub{text-align:center;color:#9ca3af}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:25px;margin-top:30px}
+.card{background:#0d111a;border:1px solid #1f2937;border-radius:12px;padding:30px;position:relative}
+.card.featured{border-color:#facc15}
+.badge{position:absolute;top:-12px;inset-inline-start:20px;background:#facc15;color:#000;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:bold}
+.price{font-size:42px;color:#facc15;font-weight:bold;margin:15px 0}
+.price span{font-size:16px;color:#9ca3af}
+ul{list-style:none;padding:0;line-height:2}
+ul li::before{content:"✓ ";color:#4ade80;font-weight:bold}
+.cta{display:block;text-align:center;background:#facc15;color:#000;padding:15px;border-radius:8px;text-decoration:none;font-weight:bold;margin-top:20px;font-size:17px;width:100%;box-sizing:border-box}
+.cta:hover{background:#fde047}
+.cta.ghost{background:transparent;border:1px solid #4b5563;color:#e5e7eb}
+.cta[aria-disabled="true"]{opacity:.5;pointer-events:none}
+.info{background:#07090e;border:1px solid #facc15;border-radius:8px;padding:15px;margin-top:20px;font-size:13px;text-align:center}
+.note{text-align:center;color:#6b7280;font-size:13px;margin:30px 0}
+#signin{display:flex;justify-content:center;margin-top:16px}
+select{background:#1f2937;color:#fff;border:1px solid #374151;border-radius:8px;padding:6px 10px}
+@media (max-width:700px){.grid{grid-template-columns:1fr}}
+</style>
+<script>
+// Langue mémorisée (même clé que le site), anglais par défaut
+(function () {
+  var L = ["en", "fr", "es", "de", "ar"], l = "en";
+  try {
+    var s = localStorage.getItem("j999_lang"), n = (navigator.language || "en").slice(0, 2);
+    l = L.indexOf(s) > -1 ? s : (L.indexOf(n) > -1 ? n : "en");
+  } catch (e) {}
+  document.documentElement.lang = l;
+})();
+</script>
+<script src="/config.js"></script>
+<script src="/i18n.js"></script>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+<body>
+<header class="header">
+  <a class="brand" href="/"><img src="/icons/logo.svg" alt=""><span>JOURNAL <b>999</b></span></a>
+  <div style="display:flex;gap:14px;align-items:center">
+    <select id="lang" aria-label="Language">
+      <option value="en">English</option><option value="fr">Français</option><option value="es">Español</option><option value="de">Deutsch</option><option value="ar">العربية</option>
+    </select>
+    <a href="/" data-i18n="Back"></a>
+  </div>
+</header>
+
+<div class="wrap">
+  <h1 data-i18n="PricingTitle"></h1>
+  <p class="sub" data-i18n="PricingSub"></p>
+
+  <div class="grid">
+    <div class="card">
+      <h2 data-i18n="PlanFreeName"></h2>
+      <div class="price">0 $ <span data-i18n="PerMonth"></span></div>
+      <ul>
+        <li data-i18n="Free1"></li><li data-i18n="Free2"></li><li data-i18n="Free3"></li><li data-i18n="Free4"></li>
+      </ul>
+      <a href="/" class="cta ghost" data-i18n="ContinueFree"></a>
+    </div>
+
+    <div class="card featured">
+      <span class="badge" data-i18n="PlanRec"></span>
+      <h2 data-i18n="PlanPremName"></h2>
+      <div class="price"><span id="priceNum" style="font-size:42px;color:#facc15">5</span> $ <span data-i18n="PerMonth"></span></div>
+      <ul>
+        <li data-i18n="Prem1"></li><li data-i18n="Prem2"></li><li data-i18n="Prem3"></li><li data-i18n="Prem4"></li>
+      </ul>
+      <a id="dodoLink" href="#" class="cta" target="_blank" rel="noopener noreferrer"></a>
+      <div id="signin"></div>
+      <div class="info" id="linkStatus"></div>
+    </div>
+  </div>
+
+  <p class="note" data-i18n="PricingNote"></p>
+</div>
+
+<script>
+(function () {
+  var C = window.J999_CONFIG, t = window.t;
+  var link = document.getElementById("dodoLink");
+  var status = document.getElementById("linkStatus");
+  var sel = document.getElementById("lang");
+  sel.value = window.getLang();
+  sel.addEventListener("change", function () {
+    try { localStorage.setItem("j999_lang", sel.value); } catch (e) {}
+    location.reload();
+  });
+  document.getElementById("priceNum").textContent = C.PRICE_USD;
+  document.title = t("Pricing") + " — Journal 999";
+
+  function setLink(url, label) {
+    link.textContent = label;
+    if (url) { link.setAttribute("href", url); link.removeAttribute("aria-disabled"); }
+    else { link.removeAttribute("href"); link.setAttribute("aria-disabled", "true"); }
+  }
+  var label = t("Subscribe") + " — " + C.PRICE_USD + " $ " + t("PerMonth");
+  setLink("", label);
+  status.textContent = t("StatusSignIn");
+
+  function decode(tok) {
+    try {
+      var b = tok.split(".")[1].replace(/-/g, "+").replace(/_/g, "/");
+      return JSON.parse(decodeURIComponent(atob(b).split("").map(function (c) { return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2); }).join("")));
+    } catch (e) { return null; }
+  }
+  function token() {
+    var tok = sessionStorage.getItem("j999_token"), p = tok && decode(tok);
+    return p && p.exp * 1000 > Date.now() + 30000 ? tok : "";
+  }
+
+  async function refresh() {
+    var tok = token();
+    if (!tok) { setLink("", label); status.textContent = t("StatusSignIn"); return; }
+    var me = null;
+    try {
+      var r = await fetch("/api/me", { headers: { Authorization: "Bearer " + tok } });
+      if (r.ok) me = await r.json();
+    } catch (e) {}
+    if (me && (me.isPremium || me.isAdmin)) {
+      setLink("", label);
+      status.textContent = t("StatusPremium") + " " + me.email;
+      return;
+    }
+    var url = window.j999Checkout(me && me.email);
+    if (!url) { setLink("", label); status.textContent = t("StatusNotConfigured"); return; }
+    setLink(url, label);
+    status.textContent = t("StatusConnected").replace("{e}", me ? me.email : "");
+  }
+
+  window.addEventListener("load", function () {
+    refresh();
+    (function init() {
+      if (!window.google || !google.accounts || !google.accounts.id) return setTimeout(init, 500);
+      google.accounts.id.initialize({
+        client_id: C.GOOGLE_CLIENT_ID,
+        callback: function (resp) { sessionStorage.setItem("j999_token", resp.credential); refresh(); }
+      });
+      if (!token()) google.accounts.id.renderButton(document.getElementById("signin"), { theme: "filled_black", size: "large", shape: "pill" });
+    })();
+  });
+})();
+</script>
+</body>
+</html>

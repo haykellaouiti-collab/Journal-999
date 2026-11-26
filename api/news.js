@@ -1,3 +1,13 @@
+// Journal 999 — API unique : actualités (GNews + RSS), résumé IA (Gemini), foot live.
+
+const LANGS = ["fr", "en", "ar"];
+const TABS = new Set(["mondial", "journaux", "financial", "economic", "sport", "foot", "live"]);
+const MAX_ARTICLES = 15;
+const RSS_TTL_MS = 120_000;
+
+const AR_ECON = ["اقتصاد", "أسواق", "بورصة", "نفط", "أسعار", "دولار", "بنك", "تجارة", "استثمار", "مال"];
+const AR_SPORT = ["رياضة", "كرة", "مباراة", "دوري", "بطولة", "كأس", "لاعب", "هدف", "فريق", "منتخب"];
+
 const RSS_FEEDS = {
   fr: {
     mondial: [
@@ -8,27 +18,6 @@ const RSS_FEEDS = {
     economic: [{ name: "France 24 Éco", url: "https://www.france24.com/fr/eco-tech/rss" }],
     sport: [{ name: "France 24 Sport", url: "https://www.france24.com/fr/sports/rss" }],
     foot: [{ name: "France 24 Sport", url: "https://www.france24.com/fr/sports/rss" }]
-  },
-  es: {
-    mondial: [
-      { name: "BBC Mundo", url: "https://feeds.bbci.co.uk/mundo/rss.xml" },
-      { name: "El País", url: "https://feeds.elpais.com/mrss-s/pages/ep/site/elpais.com/portada" },
-      { name: "DW Español", url: "https://rss.dw.com/rdf/rss-sp-all" }
-    ],
-    financial: [{ name: "El País Economía", url: "https://feeds.elpais.com/mrss-s/pages/ep/site/elpais.com/section/economia/portada" }],
-    economic: [{ name: "El País Economía", url: "https://feeds.elpais.com/mrss-s/pages/ep/site/elpais.com/section/economia/portada" }],
-    sport: [{ name: "Marca", url: "https://e00-marca.uecdn.es/rss/portada.xml" }],
-    foot: [{ name: "Marca Fútbol", url: "https://e00-marca.uecdn.es/rss/futbol/primera-division.xml" }]
-  },
-  de: {
-    mondial: [
-      { name: "Tagesschau", url: "https://www.tagesschau.de/index~rss2.xml" },
-      { name: "DW Deutsch", url: "https://rss.dw.com/rdf/rss-de-all" }
-    ],
-    financial: [{ name: "Tagesschau Wirtschaft", url: "https://www.tagesschau.de/wirtschaft/index~rss2.xml" }],
-    economic: [{ name: "Tagesschau Wirtschaft", url: "https://www.tagesschau.de/wirtschaft/index~rss2.xml" }],
-    sport: [{ name: "Sportschau", url: "https://www.sportschau.de/index~rss2.xml" }],
-    foot: [{ name: "Sportschau Fußball", url: "https://www.sportschau.de/fussball/index~rss2.xml" }]
   },
   en: {
     mondial: [
@@ -43,276 +32,301 @@ const RSS_FEEDS = {
   },
   ar: {
     mondial: [
-      { name: "الجزيرة", url: "https://www.aljazeera.net/aljazeerarss/a7c186be-1baa-4bd4-9d80-a84db769f779/73d0e1b4-532f-45ef-b135-bfdff8b8cab9" },
+      { name: "الجزيرة Al Jazeera", url: "https://www.aljazeera.net/aljazeerarxml/rss.xml" },
       { name: "BBC عربي", url: "https://feeds.bbci.co.uk/arabic/rss.xml" },
       { name: "فرانس 24", url: "https://www.france24.com/ar/rss" }
     ],
-    financial: [{ name: "BBC عربي", url: "https://feeds.bbci.co.uk/arabic/business/rss.xml" }],
-    economic: [{ name: "BBC عربي", url: "https://feeds.bbci.co.uk/arabic/business/rss.xml" }],
-    sport: [{ name: "BBC عربي رياضة", url: "https://feeds.bbci.co.uk/arabic/sports/rss.xml" }],
-    foot: [{ name: "BBC عربي رياضة", url: "https://feeds.bbci.co.uk/arabic/sports/rss.xml" }]
+    // Flux généralistes : on filtre par mots-clés pour que chaque onglet ait du sens.
+    financial: [{ name: "الجزيرة اقتصاد", url: "https://www.aljazeera.net/aljazeerarxml/rss.xml", keywords: AR_ECON }],
+    economic: [{ name: "BBC عربي", url: "https://feeds.bbci.co.uk/arabic/rss.xml", keywords: AR_ECON }],
+    sport: [{ name: "الجزيرة رياضة", url: "https://www.aljazeera.net/aljazeerarxml/rss.xml", keywords: AR_SPORT }],
+    foot: [{ name: "الجزيرة رياضة", url: "https://www.aljazeera.net/aljazeerarxml/rss.xml", keywords: AR_SPORT }]
   }
 };
 
-// Toutes les entrées du menu déroulant ont désormais un flux (avant : 6 sur 10 retombaient sur le flux "mondial")
+const same = (url) => ({ fr: url, en: url, ar: url });
+
 const CHANNEL_FEEDS = {
-  "France 24": { fr: "https://www.france24.com/fr/rss", en: "https://www.france24.com/en/rss", ar: "https://www.france24.com/ar/rss" },
+  "France 24": {
+    fr: "https://www.france24.com/fr/rss",
+    en: "https://www.france24.com/en/rss",
+    ar: "https://www.france24.com/ar/rss"
+  },
   "Al Jazeera": {
     fr: "https://www.aljazeera.com/xml/rss/all.xml",
     en: "https://www.aljazeera.com/xml/rss/all.xml",
-    ar: "https://www.aljazeera.net/aljazeerarss/a7c186be-1baa-4bd4-9d80-a84db769f779/73d0e1b4-532f-45ef-b135-bfdff8b8cab9"
+    ar: "https://www.aljazeera.net/aljazeerarxml/rss.xml"
   },
-  "BBC News": { fr: "https://feeds.bbci.co.uk/news/world/rss.xml", en: "https://feeds.bbci.co.uk/news/world/rss.xml", ar: "https://feeds.bbci.co.uk/arabic/rss.xml" },
-  "RFI": { fr: "https://www.rfi.fr/fr/actualites/rss", en: "https://www.rfi.fr/en/rss", ar: "https://www.rfi.fr/ar/rss" },
-  "Le Monde": { fr: "https://www.lemonde.fr/rss/une.xml", en: "https://www.lemonde.fr/en/rss/une.xml", ar: "https://www.lemonde.fr/rss/une.xml" },
-  "Le Figaro": { fr: "https://www.lefigaro.fr/rss/figaro_actualites.xml", en: "https://www.lefigaro.fr/rss/figaro_actualites.xml", ar: "https://www.lefigaro.fr/rss/figaro_actualites.xml" },
-  "The New York Times": { fr: "https://rss.nytimes.com/services/xml/rss/nyt/World.xml", en: "https://rss.nytimes.com/services/xml/rss/nyt/World.xml", ar: "https://rss.nytimes.com/services/xml/rss/nyt/World.xml" },
-  "Sky News": { fr: "https://feeds.skynews.com/feeds/rss/world.xml", en: "https://feeds.skynews.com/feeds/rss/world.xml", ar: "https://feeds.skynews.com/feeds/rss/world.xml" },
-  "DW": {
-    fr: "https://rss.dw.com/rdf/rss-fr-all", en: "https://rss.dw.com/rdf/rss-en-all", ar: "https://rss.dw.com/rdf/rss-ar-all",
-    es: "https://rss.dw.com/rdf/rss-sp-all", de: "https://rss.dw.com/rdf/rss-de-all"
+  "BBC News": {
+    fr: "https://feeds.bbci.co.uk/news/world/rss.xml",
+    en: "https://feeds.bbci.co.uk/news/world/rss.xml",
+    ar: "https://feeds.bbci.co.uk/arabic/rss.xml"
   },
-  "Euronews": { en: "https://www.euronews.com/rss?format=mrss", fr: "https://fr.euronews.com/rss?format=mrss", es: "https://es.euronews.com/rss?format=mrss", de: "https://de.euronews.com/rss?format=mrss", ar: "https://arabic.euronews.com/rss?format=mrss" },
-  "RTVE": { es: "https://www.rtve.es/api/noticias.rss", en: "https://www.rtve.es/api/noticias.rss" },
-  "Tagesschau": { de: "https://www.tagesschau.de/index~rss2.xml", en: "https://www.tagesschau.de/index~rss2.xml" },
-  "Echourouk": { fr: "https://www.echoroukonline.com/feed", en: "https://www.echoroukonline.com/feed", ar: "https://www.echoroukonline.com/feed" },
-  "L'Équipe": { fr: "https://dwh.lequipe.fr/api/edito/rss?path=/", en: "https://dwh.lequipe.fr/api/edito/rss?path=/", ar: "https://dwh.lequipe.fr/api/edito/rss?path=/" },
-  "Marca": { fr: "https://e00-marca.uecdn.es/rss/portada.xml", en: "https://e00-marca.uecdn.es/rss/portada.xml", ar: "https://e00-marca.uecdn.es/rss/portada.xml" }
+  RFI: {
+    fr: "https://www.rfi.fr/fr/actualites/rss",
+    en: "https://www.rfi.fr/en/rss",
+    ar: "https://www.rfi.fr/ar/rss"
+  },
+  "Le Monde": same("https://www.lemonde.fr/rss/une.xml"),
+  "Le Figaro": same("https://www.lefigaro.fr/rss/figaro_actualites.xml"),
+  "The New York Times": same("https://rss.nytimes.com/services/xml/rss/nyt/World.xml"),
+  "L'Équipe": same("https://www.lequipe.fr/rss/actu_rss.xml"),
+  Marca: same("https://e00-marca.uecdn.es/rss/portada.xml"),
+  Echourouk: same("https://www.echoroukonline.com/feed")
 };
 
-// Journaux locaux par pays (flux RSS publics ; un flux indisponible est simplement ignoré)
-const LOCAL_FEEDS = {
-  FR: [
-    { name: "Le Monde", url: "https://www.lemonde.fr/rss/une.xml" },
-    { name: "Le Figaro", url: "https://www.lefigaro.fr/rss/figaro_actualites.xml" },
-    { name: "France Info", url: "https://www.francetvinfo.fr/titres.rss" }
-  ],
-  DZ: [
-    { name: "Echourouk", url: "https://www.echoroukonline.com/feed" },
-    { name: "TSA Algérie", url: "https://www.tsa-algerie.com/feed/" },
-    { name: "El Watan", url: "https://elwatan-dz.com/feed" }
-  ],
-  MA: [
-    { name: "Hespress", url: "https://www.hespress.com/feed" },
-    { name: "Le360", url: "https://fr.le360.ma/rss" },
-    { name: "Morocco World News", url: "https://www.moroccoworldnews.com/feed" }
-  ],
-  TN: [
-    { name: "Kapitalis", url: "https://kapitalis.com/feed/" },
-    { name: "Tunisie Numérique", url: "https://www.tunisienumerique.com/feed/" }
-  ],
-  SA: [{ name: "Arab News", url: "https://www.arabnews.com/rss.xml" }],
-  GB: [
-    { name: "BBC UK", url: "https://feeds.bbci.co.uk/news/uk/rss.xml" },
-    { name: "The Guardian UK", url: "https://www.theguardian.com/uk/rss" }
-  ],
-  US: [
-    { name: "The New York Times", url: "https://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml" },
-    { name: "NPR", url: "https://feeds.npr.org/1001/rss.xml" }
-  ],
-  CA: [{ name: "CBC News", url: "https://www.cbc.ca/webfeed/rss/rss-topstories" }],
-  ES: [
-    { name: "El País", url: "https://feeds.elpais.com/mrss-s/pages/ep/site/elpais.com/portada" },
-    { name: "Marca", url: "https://e00-marca.uecdn.es/rss/portada.xml" }
-  ],
-  DE: [{ name: "Deutsche Welle", url: "https://rss.dw.com/rdf/rss-en-all" }],
-  IT: [{ name: "ANSA", url: "https://www.ansa.it/sito/ansait_rss.xml" }],
-  EG: [{ name: "Egypt Independent", url: "https://egyptindependent.com/feed/" }],
-  AE: [{ name: "The National", url: "https://www.thenationalnews.com/arc/outboundfeeds/rss/?outputType=xml" }],
-  IN: [
-    { name: "Times of India", url: "https://timesofindia.indiatimes.com/rssfeedstopstories.cms" },
-    { name: "The Hindu", url: "https://www.thehindu.com/news/national/feeder/default.rss" }
-  ],
-  AU: [{ name: "ABC Australia", url: "https://www.abc.net.au/news/feed/51120/rss.xml" }],
-  BR: [{ name: "G1", url: "https://g1.globo.com/rss/g1/" }],
-  NG: [{ name: "Punch Nigeria", url: "https://punchng.com/feed/" }],
-  ZA: [{ name: "News24", url: "https://feeds.news24.com/articles/news24/TopStories/rss" }],
-  JP: [{ name: "NHK", url: "https://www3.nhk.or.jp/rss/news/cat0.xml" }]
-};
+/* ---------- Utilitaires ---------- */
 
-const ENTITIES = { amp: "&", lt: "<", gt: ">", quot: '"', apos: "'", nbsp: " " };
+const first = (v) => (Array.isArray(v) ? v[0] : v);
+const clean = (v, max) => String(first(v) ?? "").trim().slice(0, max);
 
-function decodeXml(str) {
-  return (str || "")
-    .replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, "$1")
-    .replace(/&#x([0-9a-f]+);/gi, (_, h) => String.fromCodePoint(parseInt(h, 16)))
-    .replace(/&#(\d+);/g, (_, d) => String.fromCodePoint(parseInt(d, 10)))
-    .replace(/&(amp|lt|gt|quot|apos|nbsp);/g, (_, n) => ENTITIES[n])
-    .replace(/<[^>]+>/g, " ")
-    .replace(/\s+/g, " ")
-    .trim();
+function codePoint(n) {
+  try {
+    return String.fromCodePoint(n);
+  } catch (_) {
+    return "";
+  }
 }
 
-function httpUrl(u) {
-  try {
-    const x = new URL(u);
-    return x.protocol === "http:" || x.protocol === "https:" ? x.href : null;
-  } catch (_) {
-    return null;
-  }
+function decodeEntities(s) {
+  return s
+    .replace(/&#x([0-9a-f]+);/gi, (_, h) => codePoint(parseInt(h, 16)))
+    .replace(/&#(\d+);/g, (_, d) => codePoint(parseInt(d, 10)))
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .replace(/&apos;|&#39;/g, "'")
+    .replace(/&nbsp;/g, " ")
+    .replace(/&amp;/g, "&");
+}
+
+const unwrapCdata = (s) => (s || "").replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, "$1");
+
+function htmlOf(s) {
+  return decodeEntities(unwrapCdata(s));
+}
+
+function textOf(s) {
+  return htmlOf(s).replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
 }
 
 function parseRssXml(xml, sourceName) {
   const items = [];
   const blocks = xml.match(/<item[\s>][\s\S]*?<\/item>/gi) || [];
-  for (const block of blocks.slice(0, 15)) {
-    const get = (tag) => block.match(new RegExp(`<${tag}[^>]*>([\\s\\S]*?)</${tag}>`, "i"))?.[1];
-    const rawDesc = get("description") || "";
-    const mediaImg =
+  for (const block of blocks.slice(0, MAX_ARTICLES)) {
+    const pick = (tag) => block.match(new RegExp(`<${tag}[^>]*>([\\s\\S]*?)</${tag}>`, "i"))?.[1];
+    const title = textOf(pick("title"));
+    const url = textOf(pick("link"));
+    const descHtml = htmlOf(pick("description"));
+    const description = descHtml.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+    const image =
       block.match(/<media:content[^>]*url=["']([^"']+)["']/i)?.[1] ||
       block.match(/<media:thumbnail[^>]*url=["']([^"']+)["']/i)?.[1] ||
-      block.match(/<enclosure[^>]*type=["']image[^"']*["'][^>]*url=["']([^"']+)["']/i)?.[1] ||
-      block.match(/<enclosure[^>]*url=["']([^"']+)["']/i)?.[1] ||
-      decodeXmlRaw(rawDesc).match(/<img[^>]*src=["']([^"']+)["']/i)?.[1];
+      block.match(/<enclosure[^>]*url=["']([^"']+)["'][^>]*type=["']image/i)?.[1] ||
+      descHtml.match(/<img[^>]+src=["']([^"']+)["']/i)?.[1] ||
+      null;
 
-    const title = decodeXml(get("title"));
-    const url = httpUrl(decodeXml(get("link")));
-    const dateRaw = decodeXml(get("pubDate") || get("dc:date"));
-    const d = dateRaw ? new Date(dateRaw) : null;
-
-    if (title && url) {
-      items.push({
-        title,
-        description: decodeXml(rawDesc),
-        url,
-        image: mediaImg ? httpUrl(decodeXml(mediaImg)) : null,
-        publishedAt: d && !isNaN(d) ? d.toISOString() : null,
-        source: { name: sourceName }
-      });
+    if (title && /^https?:\/\//i.test(url)) {
+      items.push({ title, description, url, image, source: { name: sourceName } });
     }
   }
   return items;
 }
 
-function decodeXmlRaw(s) {
-  return s.replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, "$1").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"').replace(/&amp;/g, "&");
-}
+const rssCache = new Map();
 
-async function fetchOneFeed(feed) {
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), 5000);
-  try {
-    const res = await fetch(feed.url, {
-      signal: controller.signal,
-      headers: { "User-Agent": "Journal999Bot/3.0", Accept: "application/rss+xml, application/xml, text/xml" }
+async function fetchFeed(feed) {
+  const hit = rssCache.get(feed.url);
+  if (hit && Date.now() - hit.t < RSS_TTL_MS) return hit.items;
+
+  const res = await fetch(feed.url, {
+    signal: AbortSignal.timeout(5000),
+    headers: { "User-Agent": "Journal999Bot/2.1", Accept: "application/rss+xml, application/xml, text/xml" }
+  });
+  if (!res.ok) throw new Error(`RSS ${res.status}`);
+  let items = parseRssXml(await res.text(), feed.name);
+
+  if (feed.keywords) {
+    const filtered = items.filter((a) => {
+      const hay = `${a.title} ${a.description}`;
+      return feed.keywords.some((k) => hay.includes(k));
     });
-    if (!res.ok) return [];
-    return parseRssXml(await res.text(), feed.name);
-  } catch (_) {
-    return [];
-  } finally {
-    clearTimeout(timer);
+    if (filtered.length >= 3) items = filtered;
   }
+
+  rssCache.set(feed.url, { t: Date.now(), items });
+  return items;
 }
 
-function dedupeSort(list) {
-  const seen = new Set();
-  const out = [];
-  for (const a of list) {
-    const k = a.url.split("?")[0];
-    if (seen.has(k)) continue;
-    seen.add(k);
-    out.push(a);
-  }
-  return out.sort((a, b) => (b.publishedAt || "").localeCompare(a.publishedAt || ""));
-}
-
-async function fetchRssArticles(lang, tab, newspaper, query, country) {
-  let feedList;
-  if (tab === "local" && LOCAL_FEEDS[country]) {
-    feedList = LOCAL_FEEDS[country];
-  } else if (newspaper && CHANNEL_FEEDS[newspaper]) {
-    const cf = CHANNEL_FEEDS[newspaper];
-    feedList = [{ name: newspaper, url: cf[lang] || cf.en || Object.values(cf)[0] }];
+async function fetchRssArticles(lang, tab, newspaper, query) {
+  let feeds;
+  if (newspaper && CHANNEL_FEEDS[newspaper]) {
+    feeds = [{ name: newspaper, url: CHANNEL_FEEDS[newspaper][lang] || CHANNEL_FEEDS[newspaper].en }];
   } else {
-    const group = RSS_FEEDS[lang] || RSS_FEEDS.en;
-    feedList = group[tab] || group.mondial;
+    const group = RSS_FEEDS[lang] || RSS_FEEDS.fr;
+    feeds = group[tab] || group.mondial;
   }
 
-  // Flux récupérés en parallèle (avant : séquentiel, jusqu'à 15 s de latence)
-  const results = dedupeSort((await Promise.all(feedList.map(fetchOneFeed))).flat());
+  const settled = await Promise.allSettled(feeds.map(fetchFeed));
+  let results = settled.flatMap((r) => (r.status === "fulfilled" ? r.value : []));
 
-  const terms = (query || "").trim().toLowerCase().split(/\s+/).filter(Boolean);
-  if (!terms.length) return results;
-  return results.filter((a) => {
+  // Si la chaîne choisie est indisponible, on se rabat sur le flux mondial.
+  if (results.length === 0 && newspaper) {
+    const group = RSS_FEEDS[lang] || RSS_FEEDS.fr;
+    const fallback = await Promise.allSettled(group.mondial.map(fetchFeed));
+    results = fallback.flatMap((r) => (r.status === "fulfilled" ? r.value : []));
+  }
+
+  const terms = query.toLowerCase().split(/\s+/).filter(Boolean);
+  if (terms.length === 0) return results;
+  const filtered = results.filter((a) => {
     const hay = `${a.title} ${a.description} ${a.source?.name || ""}`.toLowerCase();
     return terms.some((t) => hay.includes(t));
   });
+  return filtered.length > 0 ? filtered : results;
+}
+
+async function fetchGnews(key, topic, lang) {
+  const url =
+    `https://gnews.io/api/v4/search?q=${encodeURIComponent(topic)}` +
+    `&lang=${lang}&max=12&apikey=${key}`;
+  const res = await fetch(url, { signal: AbortSignal.timeout(5000) });
+  if (!res.ok) return [];
+  const data = await res.json();
+  return Array.isArray(data.articles) ? data.articles : [];
+}
+
+function topicFor(tab, newspaper, query) {
+  if (query) return query;
+  if (tab === "journaux" && newspaper) return newspaper;
+  return { financial: "finance", economic: "economy", sport: "sport", foot: "football" }[tab] || "world";
+}
+
+function mergeUnique(list, extra) {
+  const seen = new Set(list.map((a) => a.url));
+  for (const a of extra) {
+    if (a?.url && !seen.has(a.url)) {
+      seen.add(a.url);
+      list.push(a);
+    }
+  }
+  return list;
+}
+
+/* ---------- Gestionnaires ---------- */
+
+async function handleAi(req, res, lang) {
+  const key = process.env.GEMINI_API_KEY;
+  if (!key) {
+    res.setHeader("Cache-Control", "no-store");
+    return res.status(500).json({ error: "Clé GEMINI_API_KEY manquante dans Vercel." });
+  }
+  const title = clean(req.query.title, 300);
+  const desc = clean(req.query.desc, 1500);
+  if (!title) {
+    res.setHeader("Cache-Control", "no-store");
+    return res.status(400).json({ error: "Titre manquant." });
+  }
+
+  const label = { fr: "français", en: "anglais", ar: "arabe" }[lang];
+  const prompt = `Tu es un rédacteur en chef international. Traduis si nécessaire et résume cet article intégralement en ${label} en 3 points clés clairs, factuels et percutants. N'utilise aucune autre langue que le ${label}.
+Titre : ${title}
+Détails : ${desc}`;
+
+  try {
+    const r = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent", {
+      method: "POST",
+      signal: AbortSignal.timeout(20000),
+      headers: { "Content-Type": "application/json", "x-goog-api-key": key },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: prompt }] }],
+        generationConfig: { temperature: 0.3, thinkingConfig: { thinkingBudget: 0 } }
+      })
+    });
+    const data = await r.json();
+    const summary = data.candidates?.[0]?.content?.parts?.[0]?.text;
+    if (!r.ok || !summary) {
+      res.setHeader("Cache-Control", "no-store");
+      return res.status(502).json({ error: "Résumé indisponible pour cet article." });
+    }
+    // Un même article donne le même résumé : le CDN évite des appels Gemini inutiles.
+    res.setHeader("Cache-Control", "public, s-maxage=86400, stale-while-revalidate=604800");
+    return res.status(200).json({ summary });
+  } catch (_) {
+    res.setHeader("Cache-Control", "no-store");
+    return res.status(502).json({ error: "Résumé indisponible pour cet article." });
+  }
+}
+
+async function handleLive(res) {
+  const key = process.env.FOOTBALL_API_KEY;
+  if (!key) {
+    res.setHeader("Cache-Control", "public, s-maxage=60");
+    return res.status(200).json({ live: [] });
+  }
+  try {
+    const r = await fetch("https://v3.football.api-sports.io/fixtures?live=all", {
+      signal: AbortSignal.timeout(6000),
+      headers: { "x-apisports-key": key }
+    });
+    if (!r.ok) throw new Error(`football ${r.status}`);
+    const data = await r.json();
+    const live = (data.response || []).slice(0, 18).map((m) => ({
+      league: m.league?.name,
+      country: m.league?.country,
+      home: m.teams?.home?.name,
+      away: m.teams?.away?.name,
+      score: `${m.goals?.home ?? 0} - ${m.goals?.away ?? 0}`,
+      time: `${m.fixture?.status?.elapsed || 0}'`
+    }));
+    res.setHeader("Cache-Control", "public, s-maxage=20, stale-while-revalidate=40");
+    return res.status(200).json({ live });
+  } catch (_) {
+    res.setHeader("Cache-Control", "no-store");
+    return res.status(502).json({ error: "Scores indisponibles pour le moment." });
+  }
 }
 
 export default async function handler(req, res) {
-  const { tab = "mondial", newspaper = "", query = "", lang = "fr" } = req.query;
-  const country = String(req.query.country || "").toUpperCase();
-  const GNEWS_KEY = process.env.GNEWS_API_KEY;
-  const FOOT_KEY = process.env.FOOTBALL_API_KEY;
-  const apiLang = ["fr", "en", "ar", "es", "de"].includes(lang) ? lang : "en";
-  const q = String(query).slice(0, 100);
-
-  if (tab === "live") {
-    res.setHeader("Cache-Control", "public, s-maxage=30, stale-while-revalidate=60");
-    if (!FOOT_KEY) return res.status(200).json({ live: [] });
-    try {
-      const r = await fetch("https://v3.football.api-sports.io/fixtures?live=all", {
-        headers: { "x-apisports-key": FOOT_KEY }
-      });
-      const d = await r.json();
-      const live = (d.response || []).slice(0, 24).map((m) => ({
-        league: m.league.name,
-        country: m.league.country,
-        home: m.teams.home.name,
-        away: m.teams.away.name,
-        homeLogo: httpUrl(m.teams.home.logo),
-        awayLogo: httpUrl(m.teams.away.logo),
-        score: `${m.goals.home ?? 0} - ${m.goals.away ?? 0}`,
-        time: `${m.fixture.status.elapsed || 0}'`
-      }));
-      return res.status(200).json({ live });
-    } catch (_) {
-      return res.status(502).json({ error: "Service scores indisponible." });
-    }
+  if (req.method !== "GET" && req.method !== "HEAD") {
+    res.setHeader("Allow", "GET, HEAD");
+    return res.status(405).json({ error: "Method Not Allowed" });
   }
 
-  res.setHeader("Cache-Control", "public, s-maxage=180, stale-while-revalidate=300");
+  const lang = LANGS.includes(first(req.query.lang)) ? first(req.query.lang) : "fr";
+  if (first(req.query.action) === "ai") return handleAi(req, res, lang);
+
+  const tab = TABS.has(first(req.query.tab)) ? first(req.query.tab) : "mondial";
+  if (tab === "live") return handleLive(res);
+
+  const newspaper = clean(req.query.newspaper, 60);
+  const query = clean(req.query.query, 100);
+  const gnewsKey = process.env.GNEWS_API_KEY;
+  const rssFirst = tab === "journaux" && newspaper && CHANNEL_FEEDS[newspaper] && !query;
+
   let articles = [];
-
-  if (tab === "local") {
-    if (!LOCAL_FEEDS[country]) return res.status(400).json({ error: "Pays non pris en charge." });
-    articles = await fetchRssArticles(apiLang, tab, "", q, country);
-    return res.status(200).json({ articles: articles.slice(0, 24) });
-  }
-
-  if (GNEWS_KEY) {
-    let topic = q.trim();
-    if (!topic) {
-      topic =
-        tab === "journaux" && newspaper ? newspaper
-        : { financial: "finance", economic: "economy", sport: "sport", foot: "football" }[tab] || "world";
-    }
+  const viaGnews = async () => {
+    if (!gnewsKey) return;
     try {
-      const g = await fetch(
-        `https://gnews.io/api/v4/search?q=${encodeURIComponent(topic)}&lang=${apiLang}&max=12&apikey=${GNEWS_KEY}`
-      );
-      if (g.ok) {
-        const gd = await g.json();
-        articles = (gd.articles || [])
-          .map((a) => ({
-            title: a.title,
-            description: a.description || "",
-            url: httpUrl(a.url),
-            image: httpUrl(a.image),
-            publishedAt: a.publishedAt || null,
-            source: { name: a.source?.name || "GNews" }
-          }))
-          .filter((a) => a.title && a.url);
-      }
-    } catch (_) {}
+      mergeUnique(articles, await fetchGnews(gnewsKey, topicFor(tab, newspaper, query), lang));
+    } catch (_) {
+      // GNews indisponible : on continue avec les flux RSS.
+    }
+  };
+  const viaRss = async () => mergeUnique(articles, await fetchRssArticles(lang, tab, newspaper, query));
+
+  if (rssFirst) {
+    await viaRss();
+    if (articles.length < 4) await viaGnews();
+  } else {
+    await viaGnews();
+    if (articles.length < 4) await viaRss();
   }
 
-  // Quand une chaîne précise est choisie, on privilégie son propre flux RSS
-  if (articles.length < 4 || (newspaper && CHANNEL_FEEDS[newspaper])) {
-    const rss = await fetchRssArticles(apiLang, tab, newspaper, q);
-    articles = dedupeSort([...rss, ...articles]);
-  }
-
-  return res.status(200).json({ articles: articles.slice(0, 24) });
+  articles = articles.slice(0, MAX_ARTICLES);
+  res.setHeader(
+    "Cache-Control",
+    articles.length > 0 ? "public, s-maxage=180, stale-while-revalidate=300" : "public, s-maxage=30"
+  );
+  return res.status(200).json({ articles });
 }

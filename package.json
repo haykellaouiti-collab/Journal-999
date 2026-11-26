@@ -1,0 +1,10 @@
+{
+  "name": "journal-999-pro",
+  "version": "2.1.0",
+  "private": true,
+  "description": "Journal 999 v2 - Agrégateur mondial multilingue avec IA, RSS, Chaînes TV et Foot Live",
+  "type": "module",
+  "engines": {
+    "node": "26.x"
+  }
+}

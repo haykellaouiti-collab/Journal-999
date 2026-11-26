@@ -3,147 +3,85 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="google-adsense-account" content="ca-pub-3266873353292561">
-<title>Journal 999 — Kiosque mondial, journaux locaux, TV live & IA</title>
-<meta name="description" content="Actualités mondiales et locales de 19 pays en temps réel, TV en direct, scores foot live et résumés IA en français, anglais, espagnol, allemand et arabe.">
-<link rel="canonical" href="https://journal-999.vercel.app/fr/">
-<link rel="alternate" hreflang="en" href="https://journal-999.vercel.app/en/">
-<link rel="alternate" hreflang="fr" href="https://journal-999.vercel.app/fr/">
-<link rel="alternate" hreflang="es" href="https://journal-999.vercel.app/es/">
-<link rel="alternate" hreflang="de" href="https://journal-999.vercel.app/de/">
-<link rel="alternate" hreflang="ar" href="https://journal-999.vercel.app/ar/">
-<link rel="alternate" hreflang="x-default" href="https://journal-999.vercel.app/en/">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Journal 999 — Kiosque mondial, journaux locaux, TV live & IA">
-<meta property="og:description" content="Actualités mondiales et locales de 19 pays en temps réel, TV en direct, scores foot live et résumés IA en français, anglais, espagnol, allemand et arabe.">
-<meta property="og:url" content="https://journal-999.vercel.app/fr/">
-<meta property="og:locale" content="fr">
-<meta property="og:image" content="https://journal-999.vercel.app/icons/icon-512.png">
-<meta name="twitter:card" content="summary">
-<meta name="theme-color" content="#07090e">
-<link rel="manifest" href="/manifest.webmanifest">
-<link rel="icon" type="image/svg+xml" href="/icons/logo.svg">
-<link rel="icon" type="image/png" href="/icons/icon-192.png">
-<link rel="apple-touch-icon" href="/icons/icon-192.png">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"Journal 999","url":"https://journal-999.vercel.app/fr/","inLanguage":"fr","description":"Actualités mondiales et locales de 19 pays en temps réel, TV en direct, scores foot live et résumés IA en français, anglais, espagnol, allemand et arabe."}</script>
+<title>Journal 999 — Actualités mondiales & IA</title>
+<meta name="description" content="Journal 999 : actualités mondiales en français, anglais et arabe, résumés IA, chaînes TV et football en direct.">
+<link rel="alternate" hreflang="fr" href="/fr/">
+<link rel="alternate" hreflang="en" href="/en/">
+<link rel="alternate" hreflang="ar" href="/ar/">
+<script>try{localStorage.setItem("j999_lang","fr")}catch(e){}</script>
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
-<script src="/config.js"></script>
-<script src="/i18n.js"></script>
-<script src="/app.js"></script>
+<script src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3266873353292561" async crossorigin="anonymous"></script>
+<script src="../i18n.js" defer></script>
+<script src="../app.js" defer></script>
 </head>
-<body class="bg-[#07090e] text-gray-200 font-sans">
-
-<header class="sticky top-0 z-50 bg-[#0d111a] border-b border-gray-800 shadow-lg">
-  <div class="max-w-7xl mx-auto flex items-center justify-between p-4 flex-wrap gap-3">
-    <div class="flex items-center gap-3">
-      <a href="/fr/" class="flex items-center gap-2.5" aria-label="Journal 999">
-        <img src="/icons/logo.svg" alt="" width="40" height="40" class="w-10 h-10 rounded-xl shadow-lg shadow-yellow-500/20">
-        <span class="text-2xl font-extrabold tracking-wide text-white leading-none">JOURNAL <span class="text-yellow-400">999</span></span>
-      </a>
-      <button id="mode-btn" onclick="toggleLiteMode()" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-purple-600 text-white"></button>
-      <button id="install-btn" class="hidden px-3 py-1.5 rounded-lg text-xs font-bold bg-sky-600 text-white"></button>
+<body class="bg-[#07090e] text-gray-100 min-h-screen font-sans">
+<header class="border-b border-gray-800 bg-[#0a0d14] sticky top-0 z-40">
+  <div class="max-w-6xl mx-auto px-4 py-3 flex flex-wrap items-center gap-3 justify-between">
+    <div>
+      <h1 class="text-2xl font-black text-yellow-400 tracking-tight">JOURNAL 999</h1>
+      <p class="text-xs text-gray-400">Actualités mondiales & IA</p>
     </div>
-
-    <nav class="flex gap-1 flex-wrap text-sm font-medium" aria-label="Sections">
-      <button data-tab="mondial" onclick="setTab('mondial')" class="px-3 py-2 rounded-lg hover:bg-gray-800 text-yellow-400 font-bold" data-i18n="Tab1"></button>
-      <button data-tab="local" onclick="setTab('local')" class="px-3 py-2 rounded-lg hover:bg-gray-800 " data-i18n="TabLocal"></button>
-      <button data-tab="journaux" onclick="setTab('journaux')" class="px-3 py-2 rounded-lg hover:bg-gray-800 " data-i18n="Tab2"></button>
-      <button data-tab="tv" onclick="setTab('tv')" class="px-3 py-2 rounded-lg hover:bg-gray-800 text-sky-400 font-semibold" data-i18n="TabTV"></button>
-      <button data-tab="financial" onclick="setTab('financial')" class="px-3 py-2 rounded-lg hover:bg-gray-800 " data-i18n="Tab3"></button>
-      <button data-tab="economic" onclick="setTab('economic')" class="px-3 py-2 rounded-lg hover:bg-gray-800 " data-i18n="Tab4"></button>
-      <button data-tab="sport" onclick="setTab('sport')" class="px-3 py-2 rounded-lg hover:bg-gray-800 " data-i18n="Tab5"></button>
-      <button data-tab="foot" onclick="setTab('foot')" class="px-3 py-2 rounded-lg hover:bg-gray-800 " data-i18n="Tab6"></button>
-      <button data-tab="live" onclick="setTab('live')" class="px-3 py-2 rounded-lg hover:bg-gray-800 text-red-400 font-bold" data-i18n="Tab7"></button>
-      <button data-tab="bookmarks" onclick="setTab('bookmarks')" class="px-3 py-2 rounded-lg hover:bg-gray-800 text-yellow-300" data-i18n="TabBm"></button>
-    </nav>
-
-    <div class="flex items-center gap-2 flex-wrap">
-      <select id="lang-select" aria-label="Language" onchange="localStorage.setItem('j999_lang', this.value); location.href='/'+this.value+'/';" class="bg-gray-800 text-white border border-gray-700 rounded-lg px-2 py-1.5 text-sm">
-        <option value="en">English</option><option value="fr" selected>Français</option><option value="es">Español</option><option value="de">Deutsch</option><option value="ar">العربية</option>
-      </select>
+    <div class="flex flex-wrap items-center gap-2">
+      <nav class="flex gap-1 text-xs font-bold" aria-label="Language">
+        <a href="../fr/" class="px-2 py-1 rounded bg-yellow-400 text-black">FR</a>
+        <a href="../en/" class="px-2 py-1 rounded bg-gray-800">EN</a>
+        <a href="../ar/" class="px-2 py-1 rounded bg-gray-800">AR</a>
+      </nav>
+      <button id="mode-btn" type="button" onclick="toggleLiteMode()"></button>
+      <button type="button" onclick="openPricingModal()" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-yellow-400 text-black" data-i18n="Premium"></button>
+      <button id="admin-badge" type="button" onclick="openAdmin()" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-gray-800" data-i18n="Admin"></button>
       <div id="google-signin-btn"></div>
-      <span id="user-badge" class="hidden text-xs bg-emerald-900/60 border border-emerald-500/40 text-emerald-300 px-3 py-1.5 rounded-lg font-semibold"></span>
-      <button id="admin-badge" onclick="openAdmin()" class="text-xs bg-gray-800 hover:bg-gray-700 px-3 py-2 rounded-lg text-gray-300" data-i18n="Admin"></button>
-      <button onclick="openPricingModal()" class="bg-yellow-400 hover:bg-yellow-300 text-black px-4 py-1.5 rounded-lg font-bold text-sm transition" data-i18n="Premium"></button>
+      <span id="user-badge" class="hidden text-xs bg-gray-800 px-3 py-1.5 rounded-lg"></span>
     </div>
   </div>
 </header>
 
-<main class="max-w-7xl mx-auto p-4 pb-24">
-  <div id="newspaper-dropdown-container" class="hidden my-4 bg-[#0d111a] p-4 rounded-xl border border-gray-800 flex flex-wrap items-center gap-4">
-    <span class="text-sm font-bold text-yellow-400" data-i18n="PaperLabel"></span>
-    <select onchange="onNewspaperChange(this.value)" class="bg-gray-800 text-white border border-gray-700 rounded-lg px-4 py-2 text-sm flex-1">
+<main class="max-w-6xl mx-auto px-4 py-6">
+  <div class="flex flex-col sm:flex-row gap-2 mb-4">
+    <input id="search-input" type="search" data-i18n-ph="SearchPlaceholder" class="flex-1 bg-[#0d111a] border border-gray-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-yellow-400">
+    <button type="button" onclick="doSearch()" class="bg-yellow-400 text-black font-bold px-6 py-3 rounded-xl text-sm" data-i18n="SearchBtn"></button>
+  </div>
+
+  <div class="flex flex-wrap gap-2 mb-4">
+    <button type="button" class="tab-btn px-4 py-2 rounded-lg text-sm font-semibold bg-[#0d111a] border border-gray-800 hover:border-yellow-500/50" data-tab="mondial" onclick="setTab('mondial')" data-i18n="Tab1"></button>
+    <button type="button" class="tab-btn px-4 py-2 rounded-lg text-sm font-semibold bg-[#0d111a] border border-gray-800 hover:border-yellow-500/50" data-tab="journaux" onclick="setTab('journaux')" data-i18n="Tab2"></button>
+    <button type="button" class="tab-btn px-4 py-2 rounded-lg text-sm font-semibold bg-[#0d111a] border border-gray-800 hover:border-yellow-500/50" data-tab="financial" onclick="setTab('financial')" data-i18n="Tab3"></button>
+    <button type="button" class="tab-btn px-4 py-2 rounded-lg text-sm font-semibold bg-[#0d111a] border border-gray-800 hover:border-yellow-500/50" data-tab="economic" onclick="setTab('economic')" data-i18n="Tab4"></button>
+    <button type="button" class="tab-btn px-4 py-2 rounded-lg text-sm font-semibold bg-[#0d111a] border border-gray-800 hover:border-yellow-500/50" data-tab="sport" onclick="setTab('sport')" data-i18n="Tab5"></button>
+    <button type="button" class="tab-btn px-4 py-2 rounded-lg text-sm font-semibold bg-[#0d111a] border border-gray-800 hover:border-yellow-500/50" data-tab="foot" onclick="setTab('foot')" data-i18n="Tab6"></button>
+    <button type="button" class="tab-btn px-4 py-2 rounded-lg text-sm font-semibold bg-[#0d111a] border border-gray-800 hover:border-yellow-500/50" data-tab="live" onclick="setTab('live')" data-i18n="Tab7"></button>
+    <button type="button" class="tab-btn px-4 py-2 rounded-lg text-sm font-semibold bg-[#0d111a] border border-gray-800 hover:border-yellow-500/50" data-tab="tv" onclick="setTab('tv')" data-i18n="TabTV"></button>
+  </div>
+
+  <div id="newspaper-dropdown-container" class="hidden mb-4">
+    <select id="newspaper-select" onchange="onNewspaperChange(this.value)" class="w-full sm:w-80 bg-[#0d111a] border border-gray-700 rounded-xl px-4 py-3 text-sm">
       <option value="" data-i18n="SelectPaper"></option>
-      <option value="France 24">France 24 (Direct & RSS)</option>
-      <option value="Al Jazeera">Al Jazeera الجزيرة (Direct & RSS)</option>
-      <option value="BBC News">BBC News (UK)</option>
-      <option value="RFI">RFI Monde (France)</option>
-      <option value="Le Figaro">Le Figaro (France)</option>
-      <option value="Le Monde">Le Monde (France)</option>
-      <option value="Echourouk">Echourouk (Maghreb)</option>
-      <option value="The New York Times">The New York Times (USA)</option>
-      <option value="L'Équipe">L'Équipe (Sport)</option>
-      <option value="Marca">Marca (Football)</option>
-      <option value="Sky News">Sky News (UK)</option>
-      <option value="DW">Deutsche Welle (DE)</option>
-      <option value="Euronews">Euronews (EU)</option>
-      <option value="RTVE">RTVE (España)</option>
-      <option value="Tagesschau">Tagesschau (DE)</option>
+      <option value="France 24">France 24</option>
+      <option value="Al Jazeera">Al Jazeera</option>
+      <option value="BBC News">BBC News</option>
+      <option value="RFI">RFI</option>
+      <option value="Le Monde">Le Monde</option>
+      <option value="Le Figaro">Le Figaro</option>
+      <option value="The New York Times">The New York Times</option>
+      <option value="L'Équipe">L'Équipe</option>
+      <option value="Marca">Marca</option>
+      <option value="Echourouk">Echourouk</option>
     </select>
   </div>
 
-  <div id="country-container" class="hidden my-4 bg-[#0d111a] p-4 rounded-xl border border-gray-800 flex flex-wrap items-center gap-4">
-    <span class="text-sm font-bold text-yellow-400" data-i18n="CountryLabel"></span>
-    <select id="country-select" onchange="onCountryChange(this.value)" class="bg-gray-800 text-white border border-gray-700 rounded-lg px-4 py-2 text-sm flex-1">
-      <option value="US">🇺🇸 United States</option>
-      <option value="GB">🇬🇧 United Kingdom</option>
-      <option value="CA">🇨🇦 Canada</option>
-      <option value="AU">🇦🇺 Australia</option>
-      <option value="FR">🇫🇷 France</option>
-      <option value="DE">🇩🇪 Deutschland</option>
-      <option value="ES">🇪🇸 España</option>
-      <option value="IT">🇮🇹 Italia</option>
-      <option value="DZ">🇩🇿 Algeria / الجزائر</option>
-      <option value="MA">🇲🇦 Morocco / المغرب</option>
-      <option value="TN">🇹🇳 Tunisia / تونس</option>
-      <option value="EG">🇪🇬 Egypt / مصر</option>
-      <option value="SA">🇸🇦 Saudi Arabia / السعودية</option>
-      <option value="AE">🇦🇪 UAE / الإمارات</option>
-      <option value="IN">🇮🇳 India</option>
-      <option value="JP">🇯🇵 Japan / 日本</option>
-      <option value="BR">🇧🇷 Brasil</option>
-      <option value="NG">🇳🇬 Nigeria</option>
-      <option value="ZA">🇿🇦 South Africa</option>
-    </select>
-  </div>
-
-  <form class="flex gap-3 my-6 bg-[#0d111a] p-4 rounded-xl border border-gray-800" onsubmit="event.preventDefault(); doSearch();">
-    <input id="search-input" type="search" data-i18n-ph="SearchPlaceholder" class="flex-1 bg-black/50 border border-gray-700 rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-yellow-400">
-    <button type="submit" class="bg-yellow-400 text-black px-6 py-2 rounded-lg text-sm font-bold" data-i18n="SearchBtn"></button>
-  </form>
-
-  <div id="articles-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+  <div id="articles-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"></div>
 </main>
 
-<footer class="max-w-7xl mx-auto px-4 pb-24 text-xs text-gray-500 flex flex-wrap gap-x-6 gap-y-2 items-center justify-between">
-  <div>
-    <span id="views-total" class="font-semibold text-gray-400"></span>
-    <div id="top-sources" class="mt-1"></div>
-  </div>
-  <div class="flex gap-4">
-    <a class="hover:text-yellow-400" href="/pricing" data-i18n="Pricing"></a>
-    <a class="hover:text-yellow-400" href="/privacy" data-i18n="Privacy"></a>
-  </div>
+<footer class="max-w-6xl mx-auto px-4 py-8 text-center text-xs text-gray-500">
+  © 2026 Journal 999 · <a class="underline" href="../privacy.html">Confidentialité</a>
 </footer>
 
-<div id="modal" class="fixed inset-0 bg-black/80 hidden z-50 items-center justify-center p-4">
-  <div class="bg-[#0d111a] border border-gray-700 max-w-lg w-full rounded-2xl p-6 relative max-h-[90vh] overflow-y-auto">
-    <button onclick="closeModal()" aria-label="Close" class="absolute top-4 end-4 text-gray-400 hover:text-white text-xl">✕</button>
-    <h2 class="text-xl font-bold text-yellow-400 mb-4">Journal 999</h2>
-    <div id="modal-content" class="text-sm"></div>
+<div id="modal" class="hidden fixed inset-0 bg-black/80 z-50 items-center justify-center p-4" role="dialog" aria-modal="true">
+  <div class="bg-[#0d111a] border border-gray-700 rounded-2xl p-6 w-full max-w-lg max-h-[85vh] overflow-y-auto relative">
+    <button type="button" onclick="closeModal()" aria-label="Close" class="absolute top-3 end-4 text-gray-400 hover:text-white text-2xl leading-none">&times;</button>
+    <div id="modal-content" class="mt-2"></div>
   </div>
 </div>
-
 </body>
 </html>
